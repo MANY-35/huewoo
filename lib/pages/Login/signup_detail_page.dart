@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:huewoo/actions/LoadDB_Action.dart';
+import 'package:huewoo/models/signup_model.dart';
 
 class SignupDetailPage extends StatefulWidget {
   const SignupDetailPage({super.key});
@@ -9,6 +11,11 @@ class SignupDetailPage extends StatefulWidget {
 
 // ignore: camel_case_types
 class _signupDetailPageState extends State<SignupDetailPage> {
+  TextEditingController nickname = TextEditingController();
+  TextEditingController birth = TextEditingController();
+  TextEditingController gender = TextEditingController();
+  FirebaseManage manager = FirebaseManage();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +32,10 @@ class _signupDetailPageState extends State<SignupDetailPage> {
                   const Text("닉네임"),
                   SizedBox(
                     width: 300,
-                    child: TextFormField(expands: false),
+                    child: TextFormField(
+                      controller: nickname,
+                      expands: false,
+                    ),
                   ),
                 ],
               ),
@@ -35,7 +45,9 @@ class _signupDetailPageState extends State<SignupDetailPage> {
                   const Text("생일"),
                   SizedBox(
                     width: 300,
-                    child: TextFormField(),
+                    child: TextFormField(
+                      controller: birth,
+                    ),
                   ),
                 ],
               ),
@@ -45,9 +57,24 @@ class _signupDetailPageState extends State<SignupDetailPage> {
                   const Text("성별"),
                   SizedBox(
                     width: 300,
-                    child: TextFormField(),
+                    child: TextFormField(
+                      controller: gender,
+                    ),
                   ),
                 ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  UserInfo info = UserInfo();
+                  info.nickname = "test";
+                  info.birth = "1993-04-01";
+                  info.gender = "test";
+
+                  manager
+                      .updateUserData(info.toJson())
+                      .then((value) => Navigator.pop(context, value));
+                },
+                child: const Text("가입"),
               ),
             ],
           ),

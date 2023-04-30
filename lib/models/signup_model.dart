@@ -1,26 +1,21 @@
-class SignupModel {
-  late String id, password, nickname, gender, birth;
-  SignupModel() {
-    id = "";
-    password = "";
+class UserInfo {
+  late String nickname, gender, birth;
+  UserInfo() {
     nickname = '';
-    gender = 'Nothing';
+    gender = '';
     birth = '';
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'password': password,
       'nickname': nickname,
       'gender': gender,
       'birth': birth,
     };
   }
 
-  SignupModel.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        password = json['password'],
+  UserInfo.fromJson(Map<String, dynamic> json)
+      : birth = json['birth'],
         nickname = json['nickname'],
         gender = json['gender'];
 }

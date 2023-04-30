@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:huewoo/pages/Login/signup_detail_page.dart';
+import 'package:huewoo/actions/LoadDB_Action.dart';
+import 'package:huewoo/pages/Login/signup_page.dart';
+import 'package:huewoo/pages/home_page.dart';
 
 class MainLogin extends StatefulWidget {
   const MainLogin({super.key});
@@ -10,11 +12,46 @@ class MainLogin extends StatefulWidget {
 
 // ignore: camel_case_types
 class _mainPageState extends State<MainLogin> {
+  TextEditingController inputId = TextEditingController();
+  TextEditingController inputPwd = TextEditingController();
+  FirebaseManage loginManager = FirebaseManage();
+
+  loginAction(Services eService) {
+    if (eService.name == Services.custom.name) {
+      loginManager
+          .loginWithIdPassword(id: inputId.text, password: inputPwd.text)
+          .then((value) {
+        if (value) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      HomePage(userinfo: loginManager.userinfo)));
+        }
+      });
+    } else {
+      loginManager.loginWhitAuto(eService).then((value) {
+        if (value == 0) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      HomePage(userinfo: loginManager.userinfo)));
+        } else if (value == 1) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SignupPage(
+                        eService: eService,
+                        uid: loginManager.automanager.uid,
+                      )));
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController inputId = TextEditingController();
-    TextEditingController inputPwd = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(),
       body: Column(
@@ -38,7 +75,7 @@ class _mainPageState extends State<MainLogin> {
                         children: [
                           const Text("아이디"),
                           SizedBox(
-                            width: 300,
+                            width: 100,
                             child: TextField(
                               controller: inputId,
                               decoration: const InputDecoration(),
@@ -50,7 +87,7 @@ class _mainPageState extends State<MainLogin> {
                         children: [
                           const Text("비밀번호"),
                           SizedBox(
-                            width: 300,
+                            width: 100,
                             child: TextField(
                               controller: inputPwd,
                               decoration: const InputDecoration(),
@@ -65,14 +102,19 @@ class _mainPageState extends State<MainLogin> {
                     children: [
                       ElevatedButton(
                         child: const Text("로그인"),
-                        onPressed: () {},
+                        onPressed: () {
+                          loginAction(Services.custom);
+                        },
                       ),
                       ElevatedButton(
                         child: const Text("회원가입"),
                         onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SignupDetailPage(),
+                              builder: (context) => const SignupPage(
+                                eService: Services.custom,
+                                uid: "",
+                              ),
                             )),
                       ),
                     ],
@@ -86,16 +128,22 @@ class _mainPageState extends State<MainLogin> {
             child: Column(
               children: [
                 ElevatedButton(
+                  onPressed: () {
+                    loginAction(Services.kakao);
+                  },
                   child: const Text("Kakao"),
-                  onPressed: () {},
                 ),
                 ElevatedButton(
+                  onPressed: () {
+                    loginAction(Services.naver);
+                  },
                   child: const Text("Naver"),
-                  onPressed: () {},
                 ),
                 ElevatedButton(
+                  onPressed: () {
+                    loginAction(Services.google);
+                  },
                   child: const Text("Google"),
-                  onPressed: () {},
                 )
               ],
             ),
